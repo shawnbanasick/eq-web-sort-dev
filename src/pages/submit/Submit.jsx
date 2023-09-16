@@ -54,6 +54,10 @@ const SubmitPage = () => {
   const transferTextAbove = decodeHTML(langObj.transferTextAbove);
   const transferTextBelow = decodeHTML(langObj.transferTextBelow);
   const goodbyeMessage = decodeHTML(langObj.goodbyeMessage);
+  const linkedProjectFallbackMessage = decodeHTML(
+    langObj.linkedProjectFallbackMessage
+  );
+  const linkedProjectBtnMessage = decodeHTML(langObj.linkedProjectBtnMessage);
 
   const pageHeader = ReactHtmlParser(decodeHTML(langObj.transferHead));
 
@@ -73,7 +77,7 @@ const SubmitPage = () => {
       transmissionResults["timePresort"] = results.timeOnpresortPage;
       transmissionResults["timeSort"] = results.timeOnsortPage;
 
-      if (configObj.firebaseOrLocal === "local") {
+      if (configObj.setupTarget === "local") {
         transmissionResults["partId"] = localParticipantName;
         transmissionResults["usercode"] = localUsercode;
       }
@@ -152,14 +156,32 @@ const SubmitPage = () => {
 
   // early return if data submit success event
   if (displayGoodbyeMessage === true) {
-    return (
-      <React.Fragment>
-        <GoodbyeDiv>{ReactHtmlParser(goodbyeMessage)}</GoodbyeDiv>
-      </React.Fragment>
-    );
+    if (configObj.linkToSecondProject === true) {
+      return (
+        <GoodbyeDiv>
+          {ReactHtmlParser(linkedProjectFallbackMessage)}
+          <a
+            id="secondProjectLink"
+            href={`${configObj.secondProjectUrl}/#/?usercode=${urlUsercode}`}
+            style={{ targetNew: "tab", textDecoration: "none" }}
+          >
+            <StyledButton>
+              {ReactHtmlParser(linkedProjectBtnMessage)}
+            </StyledButton>
+          </a>
+        </GoodbyeDiv>
+      );
+    } else {
+      // *** goodbye message for a normal firebase project ***
+      return (
+        <React.Fragment>
+          <GoodbyeDiv>{ReactHtmlParser(goodbyeMessage)}</GoodbyeDiv>
+        </React.Fragment>
+      );
+    }
   }
 
-  if (configObj.firebaseOrLocal === "local") {
+  if (configObj.setupTarget === "local") {
     return (
       <React.Fragment>
         <SortTitleBar background={headerBarColor}>{pageHeader}</SortTitleBar>
@@ -169,7 +191,7 @@ const SubmitPage = () => {
         </ContainerDiv>
       </React.Fragment>
     );
-  } else if (configObj.firebaseOrLocal === "sheets") {
+  } else if (configObj.setupTarget === "sheets") {
     return (
       <React.Fragment>
         <SortTitleBar background={headerBarColor}>{pageHeader}</SortTitleBar>
@@ -188,7 +210,7 @@ const SubmitPage = () => {
         </ContainerDiv>
       </React.Fragment>
     );
-  } else if (configObj.firebaseOrLocal === "email") {
+  } else if (configObj.setupTarget === "email") {
     return (
       <React.Fragment>
         <SortTitleBar background={headerBarColor}>{pageHeader}</SortTitleBar>
@@ -199,6 +221,7 @@ const SubmitPage = () => {
       </React.Fragment>
     );
   } else {
+    // *** default to FIREBASE ***
     return (
       <React.Fragment>
         <SortTitleBar background={headerBarColor}>{pageHeader}</SortTitleBar>
@@ -263,6 +286,38 @@ const GoodbyeDiv = styled.div`
   align-items: center;
   justify-content: center;
   flex-direction: column;
+`;
+
+const StyledButton = styled.button`
+  border-color: #2e6da4;
+  color: white;
+  font-size: 1.5em;
+  font-weight: bold;
+  padding: 0.25em 1em;
+  border-radius: 3px;
+  text-decoration: none;
+  width: auto;
+  height: 75px;
+  justify-self: right;
+  margin-right: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 30px;
+  margin-bottom: 20px;
+  background-color: ${({ theme, active }) =>
+    active ? theme.secondary : theme.primary};
+
+  &:hover {
+    background-color: ${({ theme }) => theme.secondary};
+  }
+
+  &:focus {
+    background-color: ${({ theme }) => theme.focus};
+  }
+  a {
+    text-decoration: none;
+  }
 `;
 
 /*

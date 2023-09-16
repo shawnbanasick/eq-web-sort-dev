@@ -54,22 +54,17 @@ const Sort = () => {
   const bypassSort = useStore(getBypassSort);
   const setCardFontSize = useStore(getSetCardFontSize);
 
-  // shrink from sort size
-  if (
-    configObj.setSortDefaultFontSizeSort === false ||
-    configObj.setSortDefaultFontSizeSort === "false"
-  ) {
-    cardFontSize = cardFontSize - 10;
-  }
-
   // set default font size
-  if (
-    (configObj.setSortDefaultFontSizeSort === true && bypassSort === false) ||
-    (configObj.setSortDefaultFontSizeSort === "true" && bypassSort === false)
-  ) {
-    cardFontSize = configObj.defaultSortFontSizeSort;
-    setCardFontSize(configObj.defaultSortFontSizeSort);
-  }
+  useEffect(() => {
+    if (
+      (configObj.setDefaultFontSizeSort === true && bypassSort === false) ||
+      (configObj.setDefaultFontSizeSort === "true" && bypassSort === false)
+    ) {
+      /* eslint-disable-next-line */
+      cardFontSize = configObj.defaultFontSizeSort;
+      setCardFontSize(configObj.defaultFontSizeSort);
+    }
+  }, [configObj, bypassSort, setCardFontSize]);
 
   // set next button display
   setDisplayNextButton(true);

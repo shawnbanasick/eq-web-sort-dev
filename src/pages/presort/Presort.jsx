@@ -48,13 +48,11 @@ const PresortPage = (props) => {
 
   // set default font size
   if (
-    (configObj.setSortDefaultFontSizePresort === true &&
-      bypassPresort === false) ||
-    (configObj.setSortDefaultFontSizePresort === "true" &&
-      bypassPresort === false)
+    (configObj.setDefaultFontSizePresort === true && bypassPresort === false) ||
+    (configObj.setDefaultFontSizePresort === "true" && bypassPresort === false)
   ) {
-    cardFontSize = configObj.defaultSortFontSizePresort;
-    setCardFontSize(configObj.defaultSortFontSizePresort);
+    cardFontSize = configObj.defaultFontSizePresort;
+    setCardFontSize(configObj.defaultFontSizePresort);
   }
 
   // set next button display
@@ -83,7 +81,7 @@ const PresortPage = (props) => {
 
   let columnStatements = statementsObj.columnStatements;
 
-  if (configObj.firebaseOrLocal === "local") {
+  if (configObj.setupTarget === "local") {
     columnStatements = JSON.parse(JSON.stringify(resetColumnStatements));
   }
 

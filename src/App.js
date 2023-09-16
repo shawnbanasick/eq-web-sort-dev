@@ -31,6 +31,8 @@ const getSetResetColumnStatements = (state) => state.setResetColumnStatements;
 const getSetSurveyQuesObjArray = (state) => state.setSurveyQuestionObjArray;
 const getSetRequiredAnswersObj = (state) => state.setRequiredAnswersObj;
 const getSetDataLoaded = (state) => state.setDataLoaded;
+const getDisplayGoodbyeMessage = (state) => state.displayGoodbyeMessage;
+const getDisableRefreshCheck = (state) => state.disableRefreshCheck;
 
 function App() {
   // STATE
@@ -47,6 +49,30 @@ function App() {
   const setSurveyQuestionObjArray = useSettingsStore(getSetSurveyQuesObjArray);
   const setRequiredAnswersObj = useSettingsStore(getSetRequiredAnswersObj);
   const setDataLoaded = useStore(getSetDataLoaded);
+  const displayGoodbyeMessage = useStore(getDisplayGoodbyeMessage);
+  const disableRefreshCheck = useStore(getDisableRefreshCheck);
+
+  useEffect(() => {
+    const unloadCallback = (event) => {
+      const e = event || window.event;
+      //console.log(e)
+      e.preventDefault();
+      if (e) {
+        e.returnValue = "";
+      }
+      return "";
+    };
+
+    if (displayGoodbyeMessage || disableRefreshCheck) {
+      window.removeEventListener("beforeunload", unloadCallback);
+    } else {
+      window.addEventListener("beforeunload", unloadCallback);
+      return () => {
+        //cleanup function
+        window.removeEventListener("beforeunload", unloadCallback);
+      };
+    }
+  }, [displayGoodbyeMessage, disableRefreshCheck]);
 
   useEffect(() => {
     let shuffleCards;

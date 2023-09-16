@@ -60,10 +60,12 @@ const LandingPage = () => {
     }
 
     // set FONT SIZE estimate
+    /*
     let fontSizeEstimate =
       5 + Math.ceil(10 * (9 / mapObj.qSortHeaderNumbers.length));
 
     setCardFontSize(fontSizeEstimate);
+    */
 
     if (
       configObj.setDefaultFontSize === "true" ||
@@ -72,12 +74,32 @@ const LandingPage = () => {
       setCardFontSize(configObj.defaultFontSize);
     }
 
-    // set partId if in URL
-    let urlName = parseParams(window.location.href);
-    if (urlName !== undefined) {
-      console.log("URL usercode: " + urlName.usercode);
-      const codeName = urlName.usercode;
+    // set participant Id if set in URL
+    let urlString = parseParams(window.location.href);
+    // if nothing in URL, check local storage
+    if (urlString === undefined || urlString === null) {
+      let urlName = localStorage.getItem("urlUsercode");
+      // if nothing in local storage, set to "not_set"
+      if (
+        urlName === null ||
+        urlName === undefined ||
+        urlName === "undefined"
+      ) {
+        console.log("no url usercode in storage");
+        setUrlUsercode("not_set");
+        localStorage.setItem("urlUsercode", "not_set");
+      } else {
+        // if something in local storage, set state
+        console.log("URL usercode from storage: ", urlName);
+        setUrlUsercode(`${urlName} (stored)`);
+      }
+    } else {
+      // if something in URL, set it in state
+      let codeName = urlString;
+      codeName = codeName.replace(/\/|#/g, "");
+      console.log("URL usercode: ", codeName);
       setUrlUsercode(codeName);
+      localStorage.setItem("urlUsercode", codeName);
     }
   }, [
     setUrlUsercode,
@@ -108,7 +130,7 @@ const LandingPage = () => {
   let displayPartIdScreen = false;
   let displayAccessCodeScreen = false;
 
-  if (configObj.firebaseOrLocal === "local") {
+  if (configObj.setupTarget === "local") {
     return (
       <>
         {dataLoaded && (
